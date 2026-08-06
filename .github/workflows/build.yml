@@ -1,1 +1,49 @@
 
+name: Build WiiU3DS 3GX
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build plugin
+    runs-on: ubuntu-latest
+
+    container:
+      image: devkitpro/devkitarm:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Show toolchain versions
+        run: |
+          arm-none-eabi-g++ --version
+          make --version
+
+      - name: Build WiiU3DS
+        run: make -j2
+
+      - name: Find build output
+        run: |
+          echo "Generated files:"
+          find . -type f \( -name "*.3gx" -o -name "*.elf" \) -print
+
+      - name: Upload WiiU3DS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: WiiU3DS-3GX
+          path: |
+            **/*.3gx
+            **/*.elf
+          if-no-files-found: error
+          retention-days: 14
