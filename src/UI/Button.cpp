@@ -1,4 +1,5 @@
 #include "UI/Button.hpp"
+#include "System/Input.hpp"
 #include "Graphics/Renderer.hpp"
 
 Button::Button(
@@ -10,23 +11,28 @@ Button::Button(
     SetBounds(bounds);
 }
 
-void Button::Update()
+void Button::Update(Input& input)
 {
-    /*
-        TODO:
-        Read touch state from the WiiU3DS Input system.
+    float x = static_cast<float>(input.GetTouchX());
+    float y = static_cast<float>(input.GetTouchY());
 
-        Planned behavior:
+    if (input.IsTouchDown() && bounds.Contains(x, y))
+    {
+        pressed = true;
+    }
 
-        touch down inside bounds
-            -> pressed = true
+    if (input.IsTouchReleased())
+    {
+        if (pressed && bounds.Contains(x, y))
+        {
+            if (onClick)
+            {
+                onClick();
+            }
+        }
 
-        touch released inside bounds
-            -> call onClick()
-
-        touch released outside bounds
-            -> pressed = false
-    */
+        pressed = false;
+    }
 }
 
 void Button::Draw()
@@ -36,12 +42,6 @@ void Button::Draw()
         : Color(220, 220, 220);
 
     Renderer::DrawRect(bounds, background);
-
-    /*
-        TODO:
-        Draw button text once Renderer::DrawText()
-        exists.
-    */
 }
 
 void Button::SetOnClick(
