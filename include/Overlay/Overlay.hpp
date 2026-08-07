@@ -1,21 +1,20 @@
 #pragma once
 
+struct Context;
+
 class Overlay
 {
 public:
-    static bool Initialize();
+    bool Initialize(Context& context);
 
-    static void Open();
-    static void Close();
-    static void Toggle();
+    void Open(Context& context);
+    void Close(Context& context);
+    void Toggle(Context& context);
 
-    static void Update();
-    static void Draw();
+    void Update(Context& context);
+    void Draw(Context& context);
 
-    static bool IsOpen();
+    bool IsOpen(const Context& context) const;
 
-    static void Exit();
-
-private:
-    static bool open;
+    void Shutdown(Context& context);
 };
