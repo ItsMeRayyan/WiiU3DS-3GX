@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "UI/Widget.hpp"
@@ -14,7 +15,7 @@ public:
         const std::string& text
     );
 
-    void Update() override;
+    void Update(Input& input) override;
     void Draw() override;
 
     void SetOnClick(const std::function<void()>& callback);
