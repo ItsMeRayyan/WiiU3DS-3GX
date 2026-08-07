@@ -1,72 +1,45 @@
-#include "System/Input.hpp"
-#include "Core/Context.hpp"
+#pragma once
 
-bool Input::Initialize()
+#include <3ds.h>
+
+struct Context;
+
+class Input
 {
-    captured = false;
-    overlayToggleRequested = false;
-    homeWasPressed = false;
-    lastHomePressTime = 0;
+public:
+    bool Initialize();
 
-    return true;
-}
+    void Update(Context& context);
 
-void Input::Update(Context& context)
-{
-    overlayToggleRequested = false;
+    bool OverlayToggleRequested() const;
 
-    /*
-        TODO: HOME interception
+    void Capture();
+    void Release();
 
-        HOME is not a normal HID button like A/B/X/Y.
+    bool IsCaptured() const;
 
-        The final WiiU3DS behavior will be:
+    bool IsTouchDown() const;
+    bool IsTouchHeld() const;
+    bool IsTouchReleased() const;
 
-            HOME once:
-                normal HOME Menu behavior
+    int GetTouchX() const;
+    int GetTouchY() const;
 
-            HOME twice quickly:
-                suppress HOME Menu transition
-                request WiiU3DS overlay toggle
+    void Shutdown();
 
-        Do not implement this using an imaginary KEY_HOME.
-    */
+private:
+    bool captured = false;
+    bool overlayToggleRequested = false;
 
-    if (context.overlayOpen)
-        Capture();
-    else
-        Release();
-}
+    bool homeWasPressed = false;
+    u64 lastHomePressTime = 0;
 
-bool Input::OverlayToggleRequested() const
-{
-    return overlayToggleRequested;
-}
+    bool touchDown = false;
+    bool touchHeld = false;
+    bool touchReleased = false;
 
-void Input::Capture()
-{
-    captured = true;
+    bool previousTouchHeld = false;
 
-    /*
-        TODO v0.0.1:
-        Consume gameplay input while overlay is open.
-
-        The game itself must continue executing.
-    */
-}
-
-void Input::Release()
-{
-    captured = false;
-}
-
-bool Input::IsCaptured() const
-{
-    return captured;
-}
-
-void Input::Shutdown()
-{
-    captured = false;
-    overlayToggleRequested = false;
-}
+    int touchX = 0;
+    int touchY = 0;
+};
