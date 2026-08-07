@@ -2,12 +2,14 @@
 
 #include "Graphics/Rect.hpp"
 
+class Input;
+
 class Widget
 {
 public:
     virtual ~Widget() = default;
 
-    virtual void Update() = 0;
+    virtual void Update(Input& input) = 0;
     virtual void Draw() = 0;
 
     void SetBounds(const Rect& rect)
