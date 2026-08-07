@@ -1,34 +1,72 @@
-#pragma once
+#include "System/Input.hpp"
+#include "Core/Context.hpp"
 
-#include <CTRPluginFramework.hpp>
-
-struct Context;
-
-class Input
+bool Input::Initialize()
 {
-public:
-    bool Initialize();
+    captured = false;
+    overlayToggleRequested = false;
+    homeWasPressed = false;
+    lastHomePressTime = 0;
 
-    void Update(Context& context);
+    return true;
+}
 
-    // True for one update when HOME is double-tapped.
-    bool OverlayToggleRequested() const;
+void Input::Update(Context& context)
+{
+    overlayToggleRequested = false;
 
-    // WiiU3DS receives input while the game continues running.
-    void Capture();
-    void Release();
+    /*
+        TODO: HOME interception
 
-    bool IsCaptured() const;
+        HOME is not a normal HID button like A/B/X/Y.
 
-    void Shutdown();
+        The final WiiU3DS behavior will be:
 
-private:
-    bool captured = false;
-    bool overlayToggleRequested = false;
+            HOME once:
+                normal HOME Menu behavior
 
-    // HOME double-tap detection
-    bool homeWasPressed = false;
-    unsigned long lastHomePressTime = 0;
+            HOME twice quickly:
+                suppress HOME Menu transition
+                request WiiU3DS overlay toggle
 
-    static constexpr unsigned long DoubleTapWindowMs = 350;
-};
+        Do not implement this using an imaginary KEY_HOME.
+    */
+
+    if (context.overlayOpen)
+        Capture();
+    else
+        Release();
+}
+
+bool Input::OverlayToggleRequested() const
+{
+    return overlayToggleRequested;
+}
+
+void Input::Capture()
+{
+    captured = true;
+
+    /*
+        TODO v0.0.1:
+        Consume gameplay input while overlay is open.
+
+        The game itself must continue executing.
+    */
+}
+
+void Input::Release()
+{
+    captured = false;
+}
+
+bool Input::IsCaptured() const
+{
+    return captured;
+}
+
+void Input::Shutdown()
+{
+    captured = false;
+    overlayToggleRequested = false;
+}
